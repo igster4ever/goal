@@ -73,6 +73,7 @@ F) Other
 ```
 
 Capture as `work_type`. This shapes which follow-up questions fire.
+Silently accumulate any rejected options as `rejected_work_type`.
 
 ---
 
@@ -125,6 +126,7 @@ E) Other
 ```
 
 Capture as `deliverable`.
+Silently accumulate rejected options as `rejected_deliverables`.
 
 ---
 
@@ -180,6 +182,12 @@ Construct the Goal Statement from the gathered inputs. Apply these rules:
   checked without judgment, sharpen it or flag it.
 - **Quality bar:** only include items the user specified. Never pad with boilerplate.
 - **Out of scope:** only include items the user specified.
+- **Alternatives dismissed:** include when `rejected_work_type` or `rejected_deliverables`
+  are non-empty. List each as a one-liner showing what was rejected and in which phase.
+  Omit the block entirely if nothing was explicitly rejected during the interview.
+- **TDD nudge:** if `work_type` is "New feature" or "Bug fix" and no success criterion
+  mentions tests passing, add a single note line after the closing `---` of the Goal
+  Statement, before the confirmation prompt.
 
 Present for confirmation:
 
@@ -199,7 +207,15 @@ Present for confirmation:
 
 **Out of scope:**
 - <explicit exclusion>
+
+**Alternatives dismissed:** *(omit this block if nothing was explicitly rejected)*
+- Work type: rejected "<option text>"
+- Deliverable: rejected "<option text>"
 ---
+
+*(for New feature / Bug fix work where no success criterion references tests passing — omit otherwise)*
+Note: no test criterion specified — consider whether a passing test suite
+is an implicit condition of done for this work type.
 
 Does this capture it? 
 [Y — lock it in / E — edit a line / R — start over]
