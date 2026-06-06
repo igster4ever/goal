@@ -128,6 +128,22 @@ E) Other
 Capture as `deliverable`.
 Silently accumulate rejected options as `rejected_deliverables`.
 
+### Motivation anchor (anti-Causal-Goodhart)
+
+Ask one follow-up before moving to Phase 4:
+
+```
+What will be noticeably better — for users, the team, or the codebase — when
+this is done?
+(One sentence, or skip if it's self-evident.)
+```
+
+Capture as `underlying_motivation`. If the user skips, record as empty — do not invent one.
+
+This anchors the Goal Statement to the *reason* behind the deliverable, not just the
+deliverable itself. Criteria can be gamed; a stated motivation is harder to satisfy on
+paper while missing in practice.
+
 ---
 
 ## Phase 4 — Success criteria
@@ -189,12 +205,29 @@ Construct the Goal Statement from the gathered inputs. Apply these rules:
   mentions tests passing, add a single note line after the closing `---` of the Goal
   Statement, before the confirmation prompt.
 
+Construct the Goal Statement. Apply additional synthesis rules:
+
+- **Activity-only metric flag (anti-Campbell):** if all success criteria are activity
+  metrics (tests pass, PR merged, document written, code committed) with no outcome
+  metrics (error rate unchanged, load time within baseline, observable behaviour change),
+  append a note after the closing `---`:
+  ```
+  Note: all criteria are activity measures — if there's an observable outcome
+  worth adding as a criterion (e.g. a metric, a user-facing behaviour, a
+  measurable quality attribute), now's the time.
+  ```
+  Omit the note if at least one criterion is outcome-oriented.
+
+- **`underlying_motivation` line:** if captured and non-empty, include as a `**Why it
+  matters:**` line immediately before `**Outcome:**`. Omit entirely if skipped.
+
 Present for confirmation:
 
 ```
 ---
 ## Goal Statement
 
+**Why it matters:** <underlying_motivation>  *(omit if not provided)*
 **Outcome:** <one-line statement of what will be true when done>
 
 **Success criteria (all must be true):**
@@ -213,11 +246,37 @@ Present for confirmation:
 - Deliverable: rejected "<option text>"
 ---
 
+*(activity-only metric note if applicable — omit otherwise)*
+Note: all criteria are activity measures — if there's an observable outcome
+worth adding as a criterion, now's the time.
+
 *(for New feature / Bug fix work where no success criterion references tests passing — omit otherwise)*
 Note: no test criterion specified — consider whether a passing test suite
 is an implicit condition of done for this work type.
+```
 
-Does this capture it? 
+### Adversarial probe (anti-Goodhart)
+
+Before presenting the Y/E/R confirmation, ask:
+
+```
+One quick check — is there a way to satisfy any of these criteria while the
+underlying goal isn't actually achieved?
+
+(e.g. deleting failing tests to make a suite pass, a rubber-stamp review,
+logging a learning that doesn't reflect real insight — if yes, let's tighten
+that criterion before locking in)
+```
+
+Wait for response:
+- **"No" / "nothing" / skip** → proceed to confirmation prompt
+- **User identifies a gap** → sharpen the relevant criterion, re-present the updated
+  Goal Statement, then ask the adversarial probe again (once more only — don't loop)
+
+Then present confirmation:
+
+```
+Does this capture it?
 [Y — lock it in / E — edit a line / R — start over]
 ```
 
@@ -289,3 +348,15 @@ Return the criteria list as the `SESSION_GOALS` array for compass to pass to
 
 5. **Stop at "good enough."** A 4-criteria Goal Statement that is 90% right and
    agreed upon is better than a 7-criteria statement that took 15 exchanges to produce.
+
+6. **Motivation anchor is optional, not interrogatory.** If the user skips the
+   underlying motivation question, do not press. An empty `underlying_motivation`
+   is fine. Never invent a motivation.
+
+7. **Adversarial probe is one round only.** If the user identifies a gameable
+   criterion and you sharpen it, ask the probe once more against the revised
+   statement — then proceed regardless. Do not loop the adversarial check.
+
+8. **Criteria vs motivation are complementary, not redundant.** The `underlying_motivation`
+   line is not a success criterion — it is context that survives criterion gaming.
+   Do not collapse motivation into a criterion or vice versa.
