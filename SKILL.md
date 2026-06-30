@@ -287,6 +287,33 @@ Wait for response:
 
 ---
 
+## Phase 8 — Verification contract (P55a — pending implementation)
+
+> **TODO (P55a):** Insert this phase after the adversarial probe (Phase 6), before Output (rename current Phase 7 → Phase 9).
+> Design: `~/.claude/skills/compass/docs/verification-contract-design.md § P55a`
+>
+> Ask two short follow-ups (combined into one message, same pattern as Phase 5):
+>
+> 1. **Evidence type** — how will each criterion be verified?
+>    (A) Tests pass  (B) Metric within range  (C) Observable behaviour  (D) Document/artefact  (E) Stakeholder sign-off  (F) Mix/other
+>
+> 2. **Stopping condition** — one sentence beginning "Stop when…", or skip.
+>
+> Capture `evidence_type` (controlled vocab: `test_output | metric | observation | document | sign_off | mix`) and `stopping_condition` (free text or null).
+>
+> Additions to Goal Statement output:
+> ```
+> **Evidence type:** <label>
+> **Stopping condition:** <text — or "not specified">
+> ```
+>
+> Session mode (`--session`) adds bracketed fields to each criterion line:
+> `1. <criterion>   [evidence: test_output]   [stop when: all unit tests pass]`
+>
+> Phase is fully skippable. `stopping_condition` is never invented.
+
+---
+
 ## Phase 7 — Output and handoff
 
 ### Standard output (mode = task)
