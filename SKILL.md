@@ -281,40 +281,40 @@ Does this capture it?
 ```
 
 Wait for response:
-- **Y / yes / enter** → proceed to Phase 7
+- **Y / yes / enter** → proceed to Phase 8
 - **E / edit** → ask which line to change; accept replacement text; re-present
 - **R / restart** → go back to Phase 1b
 
 ---
 
-## Phase 8 — Verification contract (P55a — pending implementation)
+## Phase 8 — Verification contract (P55a)
 
-> **TODO (P55a):** Insert this phase after the adversarial probe (Phase 6), before Output (rename current Phase 7 → Phase 9).
-> Design: `~/.claude/skills/compass/docs/verification-contract-design.md § P55a`
->
-> Ask two short follow-ups (combined into one message, same pattern as Phase 5):
->
-> 1. **Evidence type** — how will each criterion be verified?
->    (A) Tests pass  (B) Metric within range  (C) Observable behaviour  (D) Document/artefact  (E) Stakeholder sign-off  (F) Mix/other
->
-> 2. **Stopping condition** — one sentence beginning "Stop when…", or skip.
->
-> Capture `evidence_type` (controlled vocab: `test_output | metric | observation | document | sign_off | mix`) and `stopping_condition` (free text or null).
->
-> Additions to Goal Statement output:
-> ```
-> **Evidence type:** <label>
-> **Stopping condition:** <text — or "not specified">
-> ```
->
-> Session mode (`--session`) adds bracketed fields to each criterion line:
-> `1. <criterion>   [evidence: test_output]   [stop when: all unit tests pass]`
->
-> Phase is fully skippable. `stopping_condition` is never invented.
+Ask two short follow-ups, combined into one message (same pattern as Phase 5):
+
+```
+Two quick ones on verification:
+
+1. Evidence type — how will each criterion be verified?
+   A) Tests pass   B) Metric within range   C) Observable behaviour
+   D) Document/artefact   E) Stakeholder sign-off   F) Mix / other
+
+2. Stopping condition — one sentence beginning "Stop when…", or skip.
+```
+
+Capture `evidence_type` (controlled vocab: `test_output | metric | observation | document | sign_off | mix` — map A–F to these) and `stopping_condition` (free text, or `null` if skipped — never invent one).
+
+Add to the Goal Statement output, immediately after **Success criteria** and before **Quality bar**:
+
+```
+**Evidence type:** <label>
+**Stopping condition:** <text — or "not specified">
+```
+
+Phase is fully skippable per-field: if the user skips question 2, record `stopping_condition` as `null` and omit it from output only if evidence type was also skipped — otherwise still print the `**Evidence type:**` line with "not specified" for the missing field. If the user skips both, omit both lines entirely (do not print empty verification fields).
 
 ---
 
-## Phase 7 — Output and handoff
+## Phase 9 — Output and handoff
 
 ### Standard output (mode = task)
 
@@ -338,14 +338,20 @@ appended to `intent.md`.
 
 ### Session mode (mode = session, `--session` flag or called from compass DECIDE)
 
-Reformat the success criteria as a numbered goal list for compass session goals:
+Reformat the success criteria as a numbered goal list for compass session goals.
+If `evidence_type` and/or `stopping_condition` were captured in Phase 8, append them
+as bracketed fields on each criterion line — this lets compass's Step 3b.8 contract
+prompt pre-populate without re-asking:
 
 ```
 ✓ Session goals derived from Goal Statement:
-1. <criterion 1>
-2. <criterion 2>
-3. <criterion 3>
+1. <criterion 1>   [evidence: test_output]   [stop when: all unit tests pass]
+2. <criterion 2>   [evidence: test_output]   [stop when: all unit tests pass]
+3. <criterion 3>   [evidence: test_output]   [stop when: all unit tests pass]
 ```
+
+Omit the bracketed fields entirely (plain numbered list) if Phase 8 was skipped or
+both fields came back empty.
 
 Return the criteria list as the `SESSION_GOALS` array for compass to pass to
 `compass.py open`.
